@@ -7,19 +7,26 @@
     return;
   }
 
+  var SESSION_SIZE = 10;
+  var STREAK_FIRE_FROM = 3;
+
   var els = {
-    word:    document.getElementById("wordDisplay"),
-    pos:     document.getElementById("partOfSpeech"),
-    choices: document.getElementById("choices"),
-    feedback:document.getElementById("feedback"),
-    verdict: document.getElementById("verdict"),
-    fullWord:document.getElementById("fullWord"),
-    ruleText:document.getElementById("ruleText"),
-    nextBtn: document.getElementById("nextBtn"),
-    right:   document.getElementById("rightCount"),
-    wrong:   document.getElementById("wrongCount"),
-    streak:  document.getElementById("streakCount"),
-    reset:   document.getElementById("resetBtn"),
+    word:     document.getElementById("wordDisplay"),
+    pos:      document.getElementById("partOfSpeech"),
+    choices:  document.getElementById("choices"),
+    feedback: document.getElementById("feedback"),
+    verdict:  document.getElementById("verdict"),
+    fullWord: document.getElementById("fullWord"),
+    ruleText: document.getElementById("ruleText"),
+    nextBtn:  document.getElementById("nextBtn"),
+    right:    document.getElementById("rightCount"),
+    wrong:    document.getElementById("wrongCount"),
+    streak:   document.getElementById("streakCount"),
+    streakWrap: document.querySelector(".stat--streak"),
+    streakIcon: document.getElementById("streakIcon"),
+    reset:    document.getElementById("resetBtn"),
+    confetti: document.getElementById("confetti"),
+    dots:     document.getElementById("progressDots"),
   };
 
   var state = {
@@ -31,6 +38,7 @@
     bestStreak: 0,
     answered: false,
     current: null,
+    sessionResults: [],
   };
 
   function shuffle(arr) {
@@ -49,15 +57,39 @@
     return state.queue[state.cursor++];
   }
 
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function renderDots() {
+    var html = "";
+    for (var i = 0; i < SESSION_SIZE; i++) {
+      var cls = "dot";
+      if (i < state.sessionResults.length) {
+        cls += state.sessionResults[i] ? " is-right" : " is-wrong";
+      } else if (i === state.sessionResults.length) {
+        cls += " is-current";
+      }
+      html += '<span class="' + cls + '"></span>';
+    }
+    els.dots.innerHTML = html;
+  }
+
   function render() {
+    if (state.sessionResults.length >= SESSION_SIZE) {
+      state.sessionResults = [];
+    }
+
     state.current = nextWord();
     state.answered = false;
 
     els.pos.textContent = state.current.pos;
     els.word.innerHTML =
-      escapeHtml(state.current.prefix) +
+      '<span class="part">' + escapeHtml(state.current.prefix) + '</span>' +
       '<span class="gap" id="gap">__</span>' +
-      escapeHtml(state.current.suffix);
+      '<span class="part">' + escapeHtml(state.current.suffix) + '</span>';
 
     Array.prototype.forEach.call(els.choices.querySelectorAll(".choice"), function (b) {
       b.disabled = false;
@@ -66,24 +98,44 @@
 
     els.feedback.hidden = true;
     els.feedback.classList.remove("is-right", "is-wrong");
+
+    renderDots();
   }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
-
-  function highlightInWord(answer, isRight) {
-    var marker = "<b>" + answer + "</b>";
-    var full = escapeHtml(state.current.word);
-    // Заменим первую "нн" или "н" перед буквами суффикса на выделенную.
-    // Для надёжности — соберём заново по prefix/answer/suffix:
-    var rebuilt =
-      escapeHtml(state.current.prefix) +
-      '<b style="color:' + (isRight ? "#2eb872" : "#e0533d") + '">' + state.current.answer + "</b>" +
+  function buildHighlightedWord(isRight) {
+    var color = isRight ? "var(--right-ink)" : "var(--wrong-ink)";
+    return escapeHtml(state.current.prefix) +
+      '<b style="color:' + color + '">' + state.current.answer + "</b>" +
       escapeHtml(state.current.suffix);
-    return rebuilt;
+  }
+
+  function fireConfetti() {
+    if (!els.confetti) return;
+    var colors = ["#7d40ff", "#c25bff", "#ff6a3d", "#ffb84d", "#11b87a", "#28c5ff"];
+    var pieces = 28;
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < pieces; i++) {
+      var piece = document.createElement("i");
+      piece.style.left = (10 + Math.random() * 80) + "%";
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.setProperty("--dx", (Math.random() * 160 - 80) + "px");
+      piece.style.animationDelay = (Math.random() * 0.15) + "s";
+      piece.style.animationDuration = (1.1 + Math.random() * 0.6) + "s";
+      frag.appendChild(piece);
+    }
+    els.confetti.innerHTML = "";
+    els.confetti.appendChild(frag);
+    setTimeout(function () { els.confetti.innerHTML = ""; }, 1800);
+  }
+
+  function updateStreakBadge() {
+    if (state.streak >= STREAK_FIRE_FROM) {
+      els.streakWrap.classList.add("is-fire");
+      els.streakIcon.textContent = "🔥";
+    } else {
+      els.streakWrap.classList.remove("is-fire");
+      els.streakIcon.textContent = "★";
+    }
   }
 
   function answer(choice) {
@@ -94,7 +146,7 @@
     var gap = document.getElementById("gap");
     if (gap) {
       gap.textContent = choice;
-      gap.classList.add("gap--filled", correct ? "gap--right" : "gap--wrong");
+      gap.classList.add(correct ? "is-right" : "is-wrong");
     }
 
     Array.prototype.forEach.call(els.choices.querySelectorAll(".choice"), function (b) {
@@ -109,6 +161,7 @@
       if (state.streak > state.bestStreak) state.bestStreak = state.streak;
       els.feedback.classList.add("is-right");
       els.verdict.textContent = randomPraise();
+      fireConfetti();
     } else {
       state.wrong++;
       state.streak = 0;
@@ -116,15 +169,26 @@
       els.verdict.textContent = "Ошибка. Правильно: " + state.current.answer + ".";
     }
 
-    els.fullWord.innerHTML = "Слово: " + highlightInWord(state.current.answer, correct);
+    state.sessionResults.push(correct);
+
+    els.fullWord.innerHTML = "Слово: " + buildHighlightedWord(correct);
     els.ruleText.textContent = state.current.rule;
     els.feedback.hidden = false;
 
     updateScores();
+    updateStreakBadge();
+    renderDots();
   }
 
   function randomPraise() {
-    var p = ["Верно! 👍", "Точно! ✨", "Молодец! 🌟", "Так держать! 🎯", "Правильно! ✅"];
+    var p = [
+      "Верно! 👏",
+      "Точно в цель ✨",
+      "Молодец! 🌟",
+      "Так держать! 🎯",
+      "Превосходно ✅",
+      "Чисто! 💫",
+    ];
     return p[Math.floor(Math.random() * p.length)];
   }
 
@@ -138,13 +202,15 @@
     state.right = 0;
     state.wrong = 0;
     state.streak = 0;
+    state.sessionResults = [];
     state.queue = shuffle(words.slice());
     state.cursor = 0;
     updateScores();
+    updateStreakBadge();
     render();
   }
 
-  // ── Привязка событий
+  // ── События
   els.choices.addEventListener("click", function (e) {
     var btn = e.target.closest(".choice");
     if (!btn) return;
@@ -155,6 +221,9 @@
   els.reset.addEventListener("click", reset);
 
   document.addEventListener("keydown", function (e) {
+    var tag = (e.target && e.target.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+
     if (state.answered) {
       if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
         e.preventDefault();
@@ -168,4 +237,5 @@
 
   render();
   updateScores();
+  updateStreakBadge();
 })();

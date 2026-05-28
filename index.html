@@ -2,68 +2,118 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Тренажёр: Н или НН — 5 класс</title>
-  <meta name="description" content="Интерактивный тренажёр по русскому языку: правописание Н и НН в прилагательных, существительных и наречиях. Для 5 класса." />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1140" />
+  <title>Н или НН — тренажёр по русскому языку · 5 класс</title>
+  <meta name="description" content="Интерактивный тренажёр для 5 класса: правописание Н и НН в прилагательных, существительных и наречиях. С разбором каждого слова." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb--1"></span>
+    <span class="orb orb--2"></span>
+    <span class="orb orb--3"></span>
+  </div>
+
   <main class="app">
-    <header class="header">
-      <h1>Н или НН?</h1>
-      <p class="subtitle">Тренажёр по русскому языку · 5 класс</p>
+    <header class="brand">
+      <div class="brand__mark" aria-hidden="true">
+        <span class="brand__n">Н</span>
+        <span class="brand__sep">/</span>
+        <span class="brand__nn">НН</span>
+      </div>
+      <div class="brand__text">
+        <div class="brand__title">Грамотей</div>
+        <div class="brand__sub">тренажёр · 5 класс</div>
+      </div>
     </header>
 
-    <section class="scoreboard" aria-label="Счёт">
-      <div class="score score--right">
-        <span class="score__label">Верно</span>
-        <span class="score__value" id="rightCount">0</span>
+    <section class="stats" aria-label="Прогресс">
+      <div class="stat">
+        <div class="stat__icon stat__icon--right">✓</div>
+        <div class="stat__body">
+          <div class="stat__value" id="rightCount">0</div>
+          <div class="stat__label">верных</div>
+        </div>
       </div>
-      <div class="score score--streak">
-        <span class="score__label">Серия</span>
-        <span class="score__value" id="streakCount">0</span>
+      <div class="stat stat--streak">
+        <div class="stat__icon stat__icon--streak" id="streakIcon">★</div>
+        <div class="stat__body">
+          <div class="stat__value" id="streakCount">0</div>
+          <div class="stat__label">подряд</div>
+        </div>
       </div>
-      <div class="score score--wrong">
-        <span class="score__label">Ошибки</span>
-        <span class="score__value" id="wrongCount">0</span>
+      <div class="stat">
+        <div class="stat__icon stat__icon--wrong">✕</div>
+        <div class="stat__body">
+          <div class="stat__value" id="wrongCount">0</div>
+          <div class="stat__label">ошибок</div>
+        </div>
       </div>
     </section>
 
     <section class="card" id="card">
-      <div class="card__meta" id="partOfSpeech">прилагательное</div>
-      <div class="card__word" id="wordDisplay">кожа<span class="gap">__</span>ый</div>
+      <div class="card__progress" id="progressDots" aria-hidden="true"></div>
+
+      <div class="card__head">
+        <span class="chip" id="partOfSpeech">прилагательное</span>
+      </div>
+
+      <div class="card__word" id="wordDisplay" aria-live="polite">
+        <span class="part">кожа</span><span class="gap" id="gap">__</span><span class="part">ый</span>
+      </div>
+
+      <div class="card__hint">Выберите правильное написание</div>
 
       <div class="choices" id="choices">
-        <button class="choice" data-answer="Н" type="button">Н</button>
-        <button class="choice" data-answer="НН" type="button">НН</button>
+        <button class="choice" data-answer="Н" type="button">
+          <span class="choice__letter">Н</span>
+          <span class="choice__hint">одна</span>
+        </button>
+        <button class="choice" data-answer="НН" type="button">
+          <span class="choice__letter">НН</span>
+          <span class="choice__hint">две</span>
+        </button>
       </div>
 
       <div class="feedback" id="feedback" hidden>
         <div class="feedback__verdict" id="verdict"></div>
         <div class="feedback__word" id="fullWord"></div>
         <div class="feedback__rule" id="ruleText"></div>
-        <button class="next" id="nextBtn" type="button">Дальше →</button>
+        <button class="next" id="nextBtn" type="button">
+          <span>Дальше</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
       </div>
+
+      <div class="confetti" id="confetti" aria-hidden="true"></div>
     </section>
 
     <section class="controls">
       <button class="ghost" id="resetBtn" type="button">Сбросить счёт</button>
+
       <details class="rule-box">
-        <summary>Правила (подсказка)</summary>
+        <summary>
+          <span>Правила (подсказка)</span>
+          <svg class="rule-box__chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
         <div class="rule-box__body">
           <h3>Прилагательные</h3>
           <ul>
             <li><b>Н</b> — суффиксы <b>-ан-, -ян-, -ин-</b>: кожа<b>н</b>ый, серебря<b>н</b>ый, гуси<b>н</b>ый.</li>
             <li><b>НН</b> — суффиксы <b>-онн-, -енн-</b>: революцио<b>нн</b>ый, торжестве<b>нн</b>ый.</li>
-            <li><b>НН</b> — основа на Н + суффикс Н: тума<b>нн</b>ый (туман+н), дли<b>нн</b>ый, ка<b>м</b>е<b>нн</b>ый.</li>
+            <li><b>НН</b> — основа на Н + суффикс Н: тума<b>нн</b>ый (туман+н), дли<b>нн</b>ый, каме<b>нн</b>ый.</li>
             <li>Исключения с <b>НН</b>: <b>стеклянный, оловянный, деревянный</b>.</li>
-            <li>Исключение с <b>Н</b>: <b>ветреный</b> (но: безветренный — с приставкой пишется НН).</li>
+            <li>Исключение с <b>Н</b>: <b>ветреный</b> (но: безветренный — с приставкой НН).</li>
             <li>Без суффикса (одна Н в корне): <b>юный, синий, зелёный, румяный, свиной, багряный, пряный, единый</b>.</li>
           </ul>
           <h3>Существительные</h3>
           <ul>
-            <li>Пишется столько Н, сколько в производящем слове: <b>труже</b><b>н</b><b>ик</b> (от трудиться), <b>муче</b><b>н</b><b>ик</b>, <b>нефтя</b><b>н</b><b>ик</b>.</li>
-            <li>С НН: <b>гостиная</b>, <b>мали</b><b>нн</b><b>ик</b> (малина+ник), <b>стра</b><b>нн</b><b>ик</b>.</li>
+            <li>Пишется столько Н, сколько в производящем слове: <b>труже<span style="color:#7d40ff">н</span>ик</b> (от трудиться), <b>муче<span style="color:#7d40ff">н</span>ик</b>, <b>нефтя<span style="color:#7d40ff">н</span>ик</b>.</li>
+            <li>С НН: <b>гостиная</b>, <b>мали<span style="color:#7d40ff">нн</span>ик</b> (малина+ник), <b>стра<span style="color:#7d40ff">нн</span>ик</b>.</li>
           </ul>
           <h3>Наречия на -о/-е</h3>
           <ul>
@@ -74,7 +124,8 @@
     </section>
 
     <footer class="footer">
-      <p>Сделано для учеников 5 класса. Удачи! 🌿</p>
+      <span>Сделано с заботой для учеников 5 класса · </span>
+      <a href="https://github.com/andreycoderr/n-nn-trainer" target="_blank" rel="noopener">исходный код</a>
     </footer>
   </main>
 
