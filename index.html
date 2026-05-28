@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тренажёр: Н или НН — 5 класс</title>
+  <meta name="description" content="Интерактивный тренажёр по русскому языку: правописание Н и НН в прилагательных, существительных и наречиях. Для 5 класса." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>Н или НН?</h1>
+      <p class="subtitle">Тренажёр по русскому языку · 5 класс</p>
+    </header>
+
+    <section class="scoreboard" aria-label="Счёт">
+      <div class="score score--right">
+        <span class="score__label">Верно</span>
+        <span class="score__value" id="rightCount">0</span>
+      </div>
+      <div class="score score--streak">
+        <span class="score__label">Серия</span>
+        <span class="score__value" id="streakCount">0</span>
+      </div>
+      <div class="score score--wrong">
+        <span class="score__label">Ошибки</span>
+        <span class="score__value" id="wrongCount">0</span>
+      </div>
+    </section>
+
+    <section class="card" id="card">
+      <div class="card__meta" id="partOfSpeech">прилагательное</div>
+      <div class="card__word" id="wordDisplay">кожа<span class="gap">__</span>ый</div>
+
+      <div class="choices" id="choices">
+        <button class="choice" data-answer="Н" type="button">Н</button>
+        <button class="choice" data-answer="НН" type="button">НН</button>
+      </div>
+
+      <div class="feedback" id="feedback" hidden>
+        <div class="feedback__verdict" id="verdict"></div>
+        <div class="feedback__word" id="fullWord"></div>
+        <div class="feedback__rule" id="ruleText"></div>
+        <button class="next" id="nextBtn" type="button">Дальше →</button>
+      </div>
+    </section>
+
+    <section class="controls">
+      <button class="ghost" id="resetBtn" type="button">Сбросить счёт</button>
+      <details class="rule-box">
+        <summary>Правила (подсказка)</summary>
+        <div class="rule-box__body">
+          <h3>Прилагательные</h3>
+          <ul>
+            <li><b>Н</b> — суффиксы <b>-ан-, -ян-, -ин-</b>: кожа<b>н</b>ый, серебря<b>н</b>ый, гуси<b>н</b>ый.</li>
+            <li><b>НН</b> — суффиксы <b>-онн-, -енн-</b>: революцио<b>нн</b>ый, торжестве<b>нн</b>ый.</li>
+            <li><b>НН</b> — основа на Н + суффикс Н: тума<b>нн</b>ый (туман+н), дли<b>нн</b>ый, ка<b>м</b>е<b>нн</b>ый.</li>
+            <li>Исключения с <b>НН</b>: <b>стеклянный, оловянный, деревянный</b>.</li>
+            <li>Исключение с <b>Н</b>: <b>ветреный</b> (но: безветренный — с приставкой пишется НН).</li>
+            <li>Без суффикса (одна Н в корне): <b>юный, синий, зелёный, румяный, свиной, багряный, пряный, единый</b>.</li>
+          </ul>
+          <h3>Существительные</h3>
+          <ul>
+            <li>Пишется столько Н, сколько в производящем слове: <b>труже</b><b>н</b><b>ик</b> (от трудиться), <b>муче</b><b>н</b><b>ик</b>, <b>нефтя</b><b>н</b><b>ик</b>.</li>
+            <li>С НН: <b>гостиная</b>, <b>мали</b><b>нн</b><b>ик</b> (малина+ник), <b>стра</b><b>нн</b><b>ик</b>.</li>
+          </ul>
+          <h3>Наречия на -о/-е</h3>
+          <ul>
+            <li>В наречии пишется столько Н, сколько в прилагательном, от которого оно образовано: тума<b>нн</b>о ← туманный, ветре<b>н</b>о ← ветреный, искре<b>нн</b>е ← искренний.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <footer class="footer">
+      <p>Сделано для учеников 5 класса. Удачи! 🌿</p>
+    </footer>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
